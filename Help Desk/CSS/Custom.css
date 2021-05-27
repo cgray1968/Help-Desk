@@ -1,0 +1,200 @@
+﻿body {
+    margin: 10px;
+    padding: 2px;    
+}
+
+.auto-style2 {
+    width: 486px;
+}
+
+.clear{
+    clear: both;
+}
+
+.Grids{
+    font-family: Calibri;
+    font-size:120%
+}
+
+.menu {
+    background-color: lightgray;
+    width: 100%;
+    font-family: Arial;
+    color: indianred;
+    font-size: larger;
+}
+
+.ChangePassword {
+    position: absolute;
+    top: 30%;
+    left: 43%;
+    margin-top: 0px;
+    margin-left: -50px;
+    height: 150px;
+    background-color:white;
+}
+
+.auto-style1 {
+    position: absolute;
+    top: 50%;
+    left: 43%;
+    margin-top: 0px;
+    margin-left: -50px;
+
+}
+
+.ChangePasswordHeader {
+    background-color:blue;
+    text-align:center;
+    font-family: Arial;
+    font-size:20px;
+    width:100%; 
+    color:white;
+}
+
+
+    .PasswordLabels {
+        text-align: right;
+        font-family: Arial;
+        font-size: 12px;
+    }
+
+    .ChangePasswordButton {
+        margin-left: 30%
+    }
+
+
+    .footer {
+        bottom: 0%;
+        margin: 40px;
+        position: fixed;
+        background-color: lightskyblue;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .column {
+        display: flex;
+        flex-flow: column wrap;
+        align-content: flex-start;
+    }
+
+        .column > div {
+            margin: 10px;
+            width: 320px;
+        }
+
+
+    .tb4 {
+        width: 867px;
+    }
+
+    .background {
+        background-color: lightskyblue
+    }
+
+
+    .entry {
+        width: 960px;
+    }
+
+    .labels {
+        width: 150px;
+        float: left;
+        text-align: right;
+        font-size: 150%;
+        font-family: Calibri
+    }
+
+    .message {
+        font-family: Calibri;
+        font-size: 150%;
+        background-color: lightgrey;
+        color: indianred;
+        width: 100%;
+        vertical-align: middle;
+    }
+
+    .gridview {
+        font-size: 150%;
+        font-family: Calibri;
+    }
+
+
+    .fonts {
+        font-size: 150%;
+        font-family: Calibri
+    }
+
+    .textbox {
+        width: 250px;
+        float: left;
+        font-size: 150%;
+        font-family: Calibri
+    }
+
+    .mytitle {
+        font-family: Arial;
+        color: red;
+        font-size: 40px;
+        background-color: lightgray;
+        Width: 100%;
+        text-align: center;
+        height: 80px;
+        vertical-align: middle;
+    }
+
+    .login {
+        position: absolute;
+        top: 50%;
+        left: 43%;
+        margin-top: -50px;
+        margin-left: -50px;
+        width: 187px;
+        height: 100px;
+    }
+
+    .PopUp {
+        color: blue;
+        border-style: solid;
+        border-color: black;
+        background-color: azure;
+    }
+
+    .column2 {
+        float: left;
+        padding: 10px;
+        height: 600px;
+    }
+
+    .left {
+        width: 45%;
+        border: medium;
+        border-color: black;
+    }
+
+    .right {
+        width: 45%;
+        border: medium;
+        border-color: aqua;
+    }
+
+    .middle {
+        width: 10%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .style {
+        width: 40px;
+    }
