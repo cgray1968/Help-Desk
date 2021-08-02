@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Help_Desk {
-    
-    
-    public partial class Tickets {
-        
+namespace Help_Desk
+{
+
+
+    public partial class Tickets
+    {
+
         /// <summary>
         /// TicketsHome control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm TicketsHome;
-        
+
         /// <summary>
         /// asm control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.ScriptManager asm;
-        
+
         /// <summary>
         /// PnlTop control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel PnlTop;
-        
+
         /// <summary>
         /// lblTitle control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTitle;
-        
+
         /// <summary>
         /// lblMessage control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
-        
+
         /// <summary>
         /// menuTicket control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Menu menuTicket;
-        
+
         /// <summary>
         /// lblDDLStatus control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblDDLStatus;
-        
+
         /// <summary>
         /// ddlStatus control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlStatus;
-        
+
         /// <summary>
         /// lblDDLTickets control.
         /// </summary>
@@ -92,7 +94,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblDDLTickets;
-        
+
         /// <summary>
         /// ddlTickets control.
         /// </summary>
@@ -101,7 +103,16 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlTickets;
-        
+
+        /// <summary>
+        /// lblAdminNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAdminNotes;
+
         /// <summary>
         /// pnlTickets control.
         /// </summary>
@@ -110,7 +121,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlTickets;
-        
+
         /// <summary>
         /// gvTickets control.
         /// </summary>

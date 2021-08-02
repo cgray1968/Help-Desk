@@ -25,7 +25,7 @@ namespace Help_Desk
                 Email = getEmailfromID(ID);
             }
             MailMessage message = new MailMessage();
-            SmtpClient smtp = new SmtpClient();
+            SmtpClient smtp = new SmtpClient("smtp.office365.com");
             message.From = new MailAddress(SystemAttendant);
             if (ID != "-1")
                 message.To.Add(new MailAddress(Email));

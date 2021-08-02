@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Help_Desk {
-    
-    
-    public partial class ThisTicket {
-        
+namespace Help_Desk
+{
+
+
+    public partial class ThisTicket
+    {
+
         /// <summary>
         /// asm control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.ScriptManager asm;
-        
+
         /// <summary>
         /// pnlTop control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlTop;
-        
+
         /// <summary>
         /// lblTitle control.
         /// </summary>
@@ -38,16 +40,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTitle;
-        
-        /// <summary>
-        /// menuTicket control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Menu menuTicket;
-        
+
         /// <summary>
         /// pnlMessage control.
         /// </summary>
@@ -56,7 +49,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
-        
+
         /// <summary>
         /// lblMessage control.
         /// </summary>
@@ -65,7 +58,16 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
-        
+
+        /// <summary>
+        /// menuTicket control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Menu menuTicket;
+
         /// <summary>
         /// pnlTicketInfo control.
         /// </summary>
@@ -74,16 +76,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlTicketInfo;
-        
-        /// <summary>
-        /// hfcreatedid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfcreatedid;
-        
+
         /// <summary>
         /// lblTicketID control.
         /// </summary>
@@ -92,7 +85,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTicketID;
-        
+
         /// <summary>
         /// tbTicketID control.
         /// </summary>
@@ -101,7 +94,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbTicketID;
-        
+
         /// <summary>
         /// lblDateCreated control.
         /// </summary>
@@ -110,7 +103,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblDateCreated;
-        
+
         /// <summary>
         /// tbDateCreated control.
         /// </summary>
@@ -119,7 +112,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbDateCreated;
-        
+
         /// <summary>
         /// lblCreatedby control.
         /// </summary>
@@ -128,7 +121,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblCreatedby;
-        
+
         /// <summary>
         /// tbCreatedby control.
         /// </summary>
@@ -137,7 +130,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbCreatedby;
-        
+
         /// <summary>
         /// lblLastUpdate control.
         /// </summary>
@@ -146,7 +139,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblLastUpdate;
-        
+
         /// <summary>
         /// tbLastUpdate control.
         /// </summary>
@@ -155,7 +148,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbLastUpdate;
-        
+
         /// <summary>
         /// lblUpdateby control.
         /// </summary>
@@ -164,7 +157,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblUpdateby;
-        
+
         /// <summary>
         /// tbupdatedby control.
         /// </summary>
@@ -173,7 +166,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbupdatedby;
-        
+
         /// <summary>
         /// lbldateClosed control.
         /// </summary>
@@ -182,7 +175,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbldateClosed;
-        
+
         /// <summary>
         /// tbDateClosed control.
         /// </summary>
@@ -191,7 +184,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbDateClosed;
-        
+
         /// <summary>
         /// lblclosedBy control.
         /// </summary>
@@ -200,7 +193,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblclosedBy;
-        
+
         /// <summary>
         /// tbClosedby control.
         /// </summary>
@@ -209,7 +202,16 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbClosedby;
-        
+
+        /// <summary>
+        /// hr3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl hr3;
+
         /// <summary>
         /// lblStatus control.
         /// </summary>
@@ -218,7 +220,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblStatus;
-        
+
         /// <summary>
         /// ddlTicketStatus control.
         /// </summary>
@@ -227,7 +229,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlTicketStatus;
-        
+
         /// <summary>
         /// lblAssignedTo control.
         /// </summary>
@@ -236,7 +238,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblAssignedTo;
-        
+
         /// <summary>
         /// ddlTechs control.
         /// </summary>
@@ -245,7 +247,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlTechs;
-        
+
         /// <summary>
         /// lblPersonTicket control.
         /// </summary>
@@ -254,7 +256,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPersonTicket;
-        
+
         /// <summary>
         /// ddlTicketPersons control.
         /// </summary>
@@ -263,7 +265,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlTicketPersons;
-        
+
         /// <summary>
         /// lblComputer control.
         /// </summary>
@@ -272,7 +274,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblComputer;
-        
+
         /// <summary>
         /// ddlComputers control.
         /// </summary>
@@ -281,7 +283,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlComputers;
-        
+
         /// <summary>
         /// Category control.
         /// </summary>
@@ -290,7 +292,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Category;
-        
+
         /// <summary>
         /// ddlCategory control.
         /// </summary>
@@ -299,7 +301,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlCategory;
-        
+
         /// <summary>
         /// lblsubCategory control.
         /// </summary>
@@ -308,7 +310,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblsubCategory;
-        
+
         /// <summary>
         /// ddlSubCategory control.
         /// </summary>
@@ -317,7 +319,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlSubCategory;
-        
+
         /// <summary>
         /// lblSelection control.
         /// </summary>
@@ -326,7 +328,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblSelection;
-        
+
         /// <summary>
         /// ddlSelection control.
         /// </summary>
@@ -335,7 +337,16 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlSelection;
-        
+
+        /// <summary>
+        /// hr1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl hr1;
+
         /// <summary>
         /// lblDescription control.
         /// </summary>
@@ -344,25 +355,34 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblDescription;
-        
+
         /// <summary>
-        /// tbNotes control.
+        /// taDescription control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tbNotes;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea taDescription;
+
         /// <summary>
-        /// tbNotesHidden control.
+        /// tbDescriptionHidden control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tbNotesHidden;
-        
+        protected global::System.Web.UI.WebControls.TextBox tbDescriptionHidden;
+
+        /// <summary>
+        /// hr2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl hr2;
+
         /// <summary>
         /// pnlTicketNotes control.
         /// </summary>
@@ -371,7 +391,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlTicketNotes;
-        
+
         /// <summary>
         /// bnAddNote control.
         /// </summary>
@@ -380,16 +400,16 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button bnAddNote;
-        
+
         /// <summary>
-        /// tbNewNote control.
+        /// taNewNote control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tbNewNote;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea taNewNote;
+
         /// <summary>
         /// gvNotes control.
         /// </summary>
@@ -398,34 +418,88 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvNotes;
-        
+
         /// <summary>
-        /// hiddendata control.
+        /// lblTechNotespassword control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel hiddendata;
-        
+        protected global::System.Web.UI.WebControls.Label lblTechNotespassword;
+
         /// <summary>
-        /// lblisTech control.
+        /// tbTechNotespassword control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField lblisTech;
-        
+        protected global::System.Web.UI.WebControls.TextBox tbTechNotespassword;
+
         /// <summary>
-        /// lblisAdmin control.
+        /// btnTechNotes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField lblisAdmin;
-        
+        protected global::System.Web.UI.WebControls.Button btnTechNotes;
+
+        /// <summary>
+        /// pnlTechNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlTechNotes;
+
+        /// <summary>
+        /// btnSaveTechNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSaveTechNotes;
+
+        /// <summary>
+        /// taTechNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea taTechNotes;
+
+        /// <summary>
+        /// gvTechNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvTechNotes;
+
+        /// <summary>
+        /// lblIsTech control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField lblIsTech;
+
+        /// <summary>
+        /// lblIsAdmin control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField lblIsAdmin;
+
         /// <summary>
         /// lblNewTicket control.
         /// </summary>
@@ -434,7 +508,16 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lblNewTicket;
-        
+
+        /// <summary>
+        /// hfTechNotes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfTechNotes;
+
         /// <summary>
         /// lblMyTicketID control.
         /// </summary>
@@ -443,7 +526,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lblMyTicketID;
-        
+
         /// <summary>
         /// lbluserID control.
         /// </summary>
@@ -452,7 +535,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lbluserID;
-        
+
         /// <summary>
         /// lbluserName control.
         /// </summary>
@@ -461,7 +544,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lbluserName;
-        
+
         /// <summary>
         /// lblComputerName control.
         /// </summary>
@@ -470,7 +553,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lblComputerName;
-        
+
         /// <summary>
         /// lblComputerID control.
         /// </summary>
@@ -479,7 +562,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lblComputerID;
-        
+
         /// <summary>
         /// lblchangeMade control.
         /// </summary>
@@ -488,7 +571,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lblchangeMade;
-        
+
         /// <summary>
         /// lblticketClosed control.
         /// </summary>
@@ -497,7 +580,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField lblticketClosed;
-        
+
         /// <summary>
         /// hfReturn control.
         /// </summary>
@@ -506,7 +589,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hfReturn;
-        
+
         /// <summary>
         /// hfChanges control.
         /// </summary>
@@ -515,7 +598,7 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hfChanges;
-        
+
         /// <summary>
         /// hfOldNotes control.
         /// </summary>
@@ -524,5 +607,50 @@ namespace Help_Desk {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hfOldNotes;
+
+        /// <summary>
+        /// hfTechNotesID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfTechNotesID;
+
+        /// <summary>
+        /// hfCreatedBy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfCreatedBy;
+
+        /// <summary>
+        /// hfcreatedid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfcreatedid;
+
+        /// <summary>
+        /// hfClosedbyID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfClosedbyID;
+
+        /// <summary>
+        /// hfIsTicketNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfIsTicketNew;
     }
 }

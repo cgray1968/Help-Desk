@@ -16,12 +16,27 @@
     font-size:120%
 }
 
+.button {
+    font-family: Calibri;
+    font-size: 150%;
+    background-color: #04AA6D; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
 .menu {
-    background-color: lightgray;
+    background-color: lightskyblue;
     width: 100%;
     font-family: Arial;
     color: indianred;
-    font-size: larger;
+    font-size: 150%;
 }
 
 .ChangePassword {
@@ -98,11 +113,31 @@
         background-color: lightskyblue
     }
 
+.divBackground {
+    position: fixed;
+    z-index: 999;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: Black;
+    filter: alpha(opacity=60);
+    opacity: 0.6;
+    display: none
+}
 
-    .entry {
-        width: 960px;
-    }
+.entry {
+    width: 960px;
+}
 
+
+.BarChart{
+    margin-left:200px;
+    font-family: Calibri;
+    font-size:150%;
+    
+
+}
     .labels {
         width: 150px;
         float: left;
@@ -188,12 +223,38 @@
         width: 10%;
     }
 
-    /* Clear floats after the columns */
-    .row:after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+.Categories {
+    float: left;
+    padding: 5px;
+    height: 200px;
+}
+.catLeft{
+    float: left;
+    width:25%;
+    border:medium;
+    border-color:black;
+}
+.catRight{
+    float: right;
+    width:25%;
+    border:medium;
+    border-color:black;
+}
+.catMiddle{
+    display: inline-block;
+    width:25%;
+    border:medium;
+    border-color:black;
+}
+
 
     .style {
         width: 40px;

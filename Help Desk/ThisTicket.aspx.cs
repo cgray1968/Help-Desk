@@ -8,6 +8,7 @@ using System.Data;
 using System.Web.Security;
 using System.Data.SqlClient;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Help_Desk
 {
@@ -18,7 +19,8 @@ namespace Help_Desk
         public string notes;
         public string sidenotes;
         public Boolean newnote = false;
-        
+        public Dictionary<string, string> emailParameters = new Dictionary<string, string>();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!this.Page.User.Identity.IsAuthenticated)
@@ -26,7 +28,6 @@ namespace Help_Desk
 
             if (!IsPostBack)
             {
-
                 if ((Session["userid"] == null))
                 {
                     FormsAuthentication.SignOut();
@@ -35,8 +36,8 @@ namespace Help_Desk
                 else
                 {
                     lblticketClosed.Value = "false";
-                    lblisTech.Value = "false";
-                    lblisAdmin.Value = "false";
+                    lblIsTech.Value = "false";
+                    lblIsAdmin.Value = "false";
                     _statusChange = false;
                     lblNewTicket.Value = "true";
                     if (string.IsNullOrEmpty(Request.QueryString["ReturnTo"]))
@@ -53,15 +54,17 @@ namespace Help_Desk
                         lblMyTicketID.Value = Session["ticketID"].ToString();
                     else
                         lblMyTicketID.Value = Request.QueryString["TID"].ToString();
-                    
+
                     string _ticketid = lblMyTicketID.Value.ToString();
                     if ((_ticketid == null) || (_ticketid == ""))
                         lblMyTicketID.Value = Session["ticketID"].ToString();
                     else
                         lblMyTicketID.Value = _ticketid;
                     sqlTypeCommands sql = new sqlTypeCommands();
-                    lblisTech.Value = sql.getIsTech(lbluserID.Value) ? "true" : "false";
-                    if (lblisTech.Value.ToString() == "false")
+                    lblIsTech.Value = sql.getIsTech(lbluserID.Value) ? "true" : "false";
+                    lblIsAdmin.Value = sql.getIsAdmin(lbluserID.Value) ? "true" : "false";
+                    //if (lblisTech.Value.ToString() == "false")
+                    if ((lblIsAdmin.Value == "false" ) || (lblIsTech.Value == "false"))
                         ddlTechs.Enabled = false;
                     else
                         ddlTechs.Enabled = true;
@@ -75,10 +78,12 @@ namespace Help_Desk
                     {
                         getTicket();
                     }
-                    
+
                     else
                     {
                         tbTicketID.Text = "-1";
+                        pnlTicketNotes.Visible = false;
+                        pnlTechNotes.Visible = false;
                         tbDateCreated.Text = System.DateTime.Now.ToString();
                         hfcreatedid.Value = lbluserID.Value.ToString();
                         tbCreatedby.Text = lbluserName.Value.ToString();
@@ -89,10 +94,54 @@ namespace Help_Desk
                         getTicketPerson();
                         ddlTicketPersons.SelectedValue = lbluserID.Value.ToString();
                     }
+                    if ((lblIsTech.Value.ToString() == "true") || (lblIsAdmin.Value.ToString() == "true"))
+                    {
+                        pnlTechNotes.Visible = true;
+                        tbTechNotespassword.Visible = false;
+                        btnTechNotes.Visible = false;
+                        hfTechNotes.Value = "true";
+                        ddlTechs.Enabled = true;
+                        getTechNotes();
+                    }
+                    else
+                    {
+                        tbTechNotespassword.Visible = true;
+                        pnlTechNotes.Visible = false;
+                        btnTechNotes.Visible = true;
+                        hfTechNotes.Value = "false";
+                    }
                 }
             }
         }
+        protected string getEmailParameters(string _notes)
+        {
+            string newMessage = "";
+            Regex re = new Regex(@"\##(\w+)\##", RegexOptions.Compiled);
+            try
+            {
 
+                emailParameters.Clear();
+                //##firstName##, ##LastName##, ##TicketID##, ##TechFirstName##, ##TechLastName##, ##TicketChange##
+                string names = ddlTicketPersons.SelectedItem.ToString();
+                string techNames = ddlTechs.SelectedItem.ToString();
+                string[] _names = names.Split(' ');
+                string[] _techNames = techNames.Split(' ');
+                emailParameters.Add("##FirstName##", _names[0]);
+                emailParameters.Add("##LastName##", _names[1]);
+                emailParameters.Add("##TicketID##", tbTicketID.Text.ToString());
+                emailParameters.Add("##TechFirstName##", _techNames[0]);
+                emailParameters.Add("##TechLastName##", _techNames[1]);
+                emailParameters.Add("##TicketChange##", _notes);
+                newMessage = re.Replace(_notes, match => emailParameters[match.Groups[1].Value]);
+            }
+            catch
+            {
+
+            }
+            return newMessage;
+
+             
+        }
         protected void getComputerName()
         {
             string ComputerName = Dns.GetHostEntry(Request.ServerVariables["REMOTE_ADDR"]).HostName;
@@ -108,8 +157,8 @@ namespace Help_Desk
                 getComputerName();
             }
             else
-               lblComputerID.Value = dt.Rows[0].ItemArray[0].ToString();
-            
+                lblComputerID.Value = dt.Rows[0].ItemArray[0].ToString();
+
 
         }
 
@@ -121,9 +170,9 @@ namespace Help_Desk
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
                 query = "insert computer (computername, departmentid) values ('" + computerName.ToString() + "' , '" + dt.Rows[0].ItemArray[0].ToString() + "')";
-             else
-               query = "insert computer (computername) values ('" + computerName.ToString() + "')";
-            string success = sql.CommadSQL(query, false, null);
+            else
+                query = "insert computer (computername) values ('" + computerName.ToString() + "')";
+            string success = sql.CommandSQL(query, false, null);
 
             //Save computer to user
             //get computerid
@@ -133,9 +182,9 @@ namespace Help_Desk
             if (dt.Rows.Count > 0)
             {
                 query = "insert into computeruser (computerid, personid) values('" + dt.Rows[0].ItemArray[0].ToString() + "', '" + lbluserID.Value.ToString() + "')";
-                string Success = sql.CommadSQL(query, false, null);
+                string Success = sql.CommandSQL(query, false, null);
             }
-            
+
         }
 
         protected void getUserName()
@@ -154,7 +203,7 @@ namespace Help_Desk
         {
             lblNewTicket.Value = "false";
             DataTable dt = new DataTable();
-            String query = "select	t.ticketid,	t.createdbyID, t.createdby,	t.personid,	t.DateCreated, t.description, t.statusid, t.status, t.categoryid, t.subcategoryid, t.selectionid, t.category, t.subcategory, t.selection, t.assignedto, t.assignedid, t.computerid from v_Tickets	t where ticketID = " + lblMyTicketID.Value.ToString();
+            String query = "select	t.ticketid,	t.createdbyID, t.createdby,	t.personid,	t.DateCreated, t.description, t.statusid, t.status, t.categoryid, t.subcategoryid, t.selectionid, t.category, t.subcategory, t.selection, t.assignedto, t.assignedid, t.computerid, t.LastUpdate, t.LastUpdateby from v_Tickets t where ticketID = " + lblMyTicketID.Value.ToString();
 
             sqlTypeCommands sql = new sqlTypeCommands();
             dt = sql.ReturnDatatable(query);
@@ -184,7 +233,7 @@ namespace Help_Desk
 
                 if (ddlTicketPersons.Items.Count == 0)
                     getTicketPerson();
-                ddlTicketPersons.SelectedValue = dt.Rows[0].ItemArray[1].ToString();
+                ddlTicketPersons.SelectedValue = dt.Rows[0].ItemArray[3].ToString();
 
                 if (ddlTicketStatus.Items.Count == 0)
                     getTicketDDLStatus();
@@ -193,13 +242,15 @@ namespace Help_Desk
                 if (ddlTechs.Items.Count == 0)
                     getDDLTech();
                 ddlTechs.SelectedValue = dt.Rows[0].ItemArray[15].ToString();
-                
+
                 tbDateCreated.Text = dt.Rows[0].ItemArray[4].ToString();
                 tbTicketID.Text = lblMyTicketID.Value.ToString();
                 hfcreatedid.Value = dt.Rows[0].ItemArray[1].ToString();
                 tbCreatedby.Text = dt.Rows[0].ItemArray[2].ToString();
-                tbNotes.Text = dt.Rows[0].ItemArray[5].ToString();
-                tbNotesHidden.Text = dt.Rows[0].ItemArray[5].ToString();
+                taDescription.Value = dt.Rows[0].ItemArray[5].ToString();
+                tbDescriptionHidden.Text = dt.Rows[0].ItemArray[5].ToString();
+                tbLastUpdate.Text = dt.Rows[0].ItemArray[17].ToString();
+                tbupdatedby.Text = dt.Rows[0].ItemArray[18].ToString();
                 lblNewTicket.Value = "false";
                 _isDDLChanging = false;
                 if ((ddlTicketStatus.SelectedValue == "4") || (ddlTicketStatus.SelectedValue == "5"))
@@ -214,14 +265,14 @@ namespace Help_Desk
         {
             sqlTypeCommands sql = new sqlTypeCommands();
             DataTable dt = new DataTable();
-            String query = "select datecreated + ' ' + createdby + ' - ' + notes as info from v_ticketnotes where ticketid = " + lblMyTicketID.Value.ToString();
+            String query = "select datecreated + ' ' + createdby + ' - ' + notes as info from v_ticketnotes where ticketid = " + lblMyTicketID.Value.ToString() + " order by datecreated desc";
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
             {
                 gvNotes.DataSource = dt;
                 gvNotes.DataBind();
             }
-                
+
         }
 
         protected void getDDLTech()
@@ -241,72 +292,46 @@ namespace Help_Desk
                 ddlTechs.DataBind();
                 ddlTechs.SelectedIndex = 0;
             }
-            else
-            {
-                ddlTechs.Items.Insert(0, new ListItem("System Attendant", "0"));
-                ddlTechs.SelectedIndex = 0;
-            }
-
+            ddlTechs.Items.Insert(0, new ListItem("System Attendant", "1"));
+            ddlTechs.SelectedIndex = 0;
         }
 
 
         protected void getddlSelection()
         {
-            if (ddlSubCategory.SelectedValue != "-1")
-                {
-                if (ddlCategory.SelectedValue != "")
-                {
-                    string query = "select selectionName, selectionID from selection where subcategoryId = " + ddlSubCategory.SelectedValue.ToString();
-                    DataTable dt = new DataTable();
-                    sqlTypeCommands sql = new sqlTypeCommands();
-                    dt = sql.ReturnDatatable(query);
-                    if (dt.Rows.Count > 0)
-                    {
-                        ddlSelection.DataSource = null;
-                        ddlSelection.DataBind();
-                        ddlSelection.DataSource = dt;
-                        ddlSelection.DataTextField = "selectionName";
-                        ddlSelection.DataValueField = "selectionID";
-                        ddlSelection.DataBind();
-                        ddlSelection.Items.Insert(0, new ListItem("New SubCategory", "-1"));
-                        ddlSelection.SelectedIndex = 0;
-                    }
-                    else
-                    {
-                        ddlSelection.Items.Insert(0, new ListItem("New SubCategory", "-1"));
-                        ddlSelection.SelectedIndex = 0;
-
-                    }
-                }
+            string query = "select selectionName, selectionID from selection where subcategoryId = " + ddlSubCategory.SelectedValue.ToString() + " order by case when SelectionName='UNKNOWN' then 0 else 1 end "; ;
+            DataTable dt = new DataTable();
+            sqlTypeCommands sql = new sqlTypeCommands();
+            dt = sql.ReturnDatatable(query);
+            if (dt.Rows.Count > 0)
+            {
+                ddlSelection.DataSource = null;
+                ddlSelection.DataBind();
+                ddlSelection.DataSource = dt;
+                ddlSelection.DataTextField = "selectionName";
+                ddlSelection.DataValueField = "selectionID";
+                ddlSelection.DataBind();
             }
         }
 
 
         protected void getddlSubCategory()
         {
-            if (ddlCategory.SelectedValue != "-1")
-            {
-                string query = "select subcategoryName, subcategoryID from subcategory where categoryId = " + ddlCategory.SelectedValue.ToString();
+                string query = "select subcategoryName, subcategoryID from subcategory where categoryId = " + ddlCategory.SelectedValue.ToString() + " order by case when SubCategoryName='UNKNOWN' then 0 else 1 end ";
                 DataTable dt = new DataTable();
                 sqlTypeCommands sql = new sqlTypeCommands();
                 dt = sql.ReturnDatatable(query);
-                if (dt.Rows.Count > 0)
-                {
-                    ddlSubCategory.DataSource = null;
-                    ddlSubCategory.DataBind();
-                    ddlSubCategory.DataSource = dt;
-                    ddlSubCategory.DataTextField = "subcategoryName";
-                    ddlSubCategory.DataValueField = "subcategoryID";
-                    ddlSubCategory.DataBind();
-                    ddlSubCategory.Items.Insert(0, new ListItem("New SubCategory", "-1"));
-                    ddlSubCategory.SelectedIndex = 0;
-                }
-                else
-                {
-                    ddlSubCategory.Items.Insert(0, new ListItem("New SubCategory", "-1"));
-                    ddlSubCategory.SelectedIndex = 0;
-                }
+            if (dt.Rows.Count > 0)
+            {
+                ddlSubCategory.DataSource = null;
+                ddlSubCategory.DataBind();
+                ddlSubCategory.DataSource = dt;
+                ddlSubCategory.DataTextField = "subcategoryName";
+                ddlSubCategory.DataValueField = "subcategoryID";
+                ddlSubCategory.DataBind();
+                getddlSelection();
             }
+            
         }
 
 
@@ -327,15 +352,10 @@ namespace Help_Desk
                     ddlCategory.DataTextField = "categoryName";
                     ddlCategory.DataValueField = "categoryID";
                     ddlCategory.DataBind();
-                    ddlCategory.Items.Insert(0, new ListItem("New Category", "-1"));
-                    ddlCategory.SelectedIndex = 0;
-                }
-                else
-                {
-                    ddlCategory.Items.Insert(0, new ListItem("New Category", "-1"));
-                    ddlCategory.SelectedIndex = 0;
+                    getddlSubCategory();
                 }
             }
+   
         }
 
         protected void getDDLComputer()
@@ -363,18 +383,18 @@ namespace Help_Desk
             }
 
         }
-    
+
 
 
         protected void getTicketPerson()
         {
-            
+
             string _departmentID = "-1";
             string query;
             DataTable dtdID = new DataTable();
             DataSet ds = new DataSet();
             sqlTypeCommands sql = new sqlTypeCommands();
-            if ((lblisTech.Value == "true") || (lblisAdmin.Value == "true"))
+            if ((lblIsTech.Value == "true") || (lblIsAdmin.Value == "true"))
             {
                 _departmentID = "-1";
             }
@@ -418,13 +438,8 @@ namespace Help_Desk
 
         protected void getTicketDDLStatus()
         {
-            string query = "select statusID, StatusName from status where technician=0";
+            string query = "select statusid, statusname from status where statusid < 6 ";
             DataTable dt = new DataTable();
-            if ((lblisTech.Value == "true") || (lblisAdmin.Value == "true"))
-            {
-                query = "select statusid, statusname from status where statusid < 6 ";
-            }
-
             sqlTypeCommands sql = new sqlTypeCommands();
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
@@ -436,26 +451,46 @@ namespace Help_Desk
                 ddlTicketStatus.DataValueField = "StatusID";
                 ddlTicketStatus.DataBind();
             }
+            if ((lblIsTech.Value != "true") || (lblIsAdmin.Value != "true"))
+            {
+                ddlTicketStatus.Items.FindByValue("2").Attributes.Add("disabled", "disabled");
+                ddlTicketStatus.Items.FindByValue("3").Attributes.Add("disabled", "disabled");
+                ddlTicketStatus.Items.FindByValue("4").Attributes.Add("disabled", "disabled");
+            }
+
 
         }
 
         protected void saveTicket()
         {
-            string _computerID = null ;
+            string _computerID = null;
             string _catid = null;
             string _subcatid = null;
             string _selectionid = null;
             string _assginedtoid = null;
             string _notes = "";
-            
+            string _closedbyDate = "";
             string query;
             string success;
+            string _closedbyID;
+            if ((string.IsNullOrEmpty(tbDateClosed.Text)) && (ddlTicketStatus.SelectedItem.ToString() == "Closed"))
+            {
+                tbClosedby.Text = System.DateTime.Now.ToString();
+                _closedbyID = lbluserID.Value.ToString();
+            }
             if (tbTicketID.Text != "-1")
             {
                 int _status = Convert.ToInt16(ddlTicketStatus.SelectedValue.ToString());
 
                 if ((lblticketClosed.Value == "true") && (_status < 4))
                     ddlTicketStatus.SelectedValue = "2";
+
+                if ((string.IsNullOrEmpty(tbDateClosed.Text)) && (_status == 4))
+                {
+                    _closedbyDate = System.DateTime.Now.ToString();
+                    _closedbyID = lbluserID.Value.ToString();
+                }
+                    
                 if (ddlComputers.SelectedValue.ToString() == "-1")
                 {
                     _computerID = null;
@@ -470,16 +505,16 @@ namespace Help_Desk
                     ddlSelection.SelectedValue = "-1";
 
                 if (ddlCategory.SelectedValue.ToString() == "-1")
-                    _catid = null;
+                    _catid = "10";
                 else
                     _catid = ddlCategory.SelectedValue.ToString();
                 if (ddlSubCategory.SelectedValue.ToString() == "-1")
-                    _subcatid = null;
+                    _subcatid = "7";
                 else
                     _subcatid = ddlSubCategory.SelectedValue.ToString();
 
                 if (ddlSelection.SelectedValue.ToString() == "-1")
-                    _selectionid = null;
+                    _selectionid = "2";
                 else
                     _selectionid = ddlSelection.SelectedValue.ToString();
                 if (ddlTechs.SelectedValue.ToString() == "-1")
@@ -488,26 +523,31 @@ namespace Help_Desk
                     _assginedtoid = ddlTechs.SelectedValue.ToString();
 
 
-                query = "update ticket set personid=@personid, description=@description, categoryid=@categoryid, subcategoryid=@subcategoryid, selectionid=@selectionid, computerid=@computerid, assignedto=@assignedto, statusid =@statusid, lastupdated = @lastupdated, updatedbyid = @updatedbyid where ticketID = @ticketid ";
+                //query = "update ticket set personid=@personid, description=@description, categoryid=@categoryid, subcategoryid=@subcategoryid, selectionid=@selectionid, computerid=@computerid, assignedto=@assignedto, statusid =@statusid, lastupdated = @lastupdated, updatedbyid = @updatedbyid where ticketID = @ticketid ";
+                query = "save_Ticket";
                 lblMyTicketID.Value = tbTicketID.Text.ToString();
 
                 List<SqlParameter> sp = new List<SqlParameter>
                 {
                     new SqlParameter() { ParameterName = "@personid",  Value=ddlTicketPersons.SelectedValue.ToString()},
-                    new SqlParameter() { ParameterName = "@description",  Value=tbNotes.Text.ToString()},
-                    new SqlParameter() { ParameterName = "@categoryID", Value = _catid == null ?  (object)DBNull.Value : _catid.ToString() },
-                    new SqlParameter() { ParameterName = "@subcategoryID",Value = _subcatid == null ? (object)DBNull.Value : _subcatid.ToString()  },
-                    new SqlParameter() { ParameterName = "@selectionid", Value = _selectionid == null ? (object)DBNull.Value : _selectionid.ToString() },
-                    new SqlParameter() { ParameterName = "@assignedto",  Value = _assginedtoid == null ? (object)DBNull.Value: _assginedtoid.ToString() },
+                    new SqlParameter() { ParameterName = "@description",  Value=taDescription.Value.ToString()},
+                    new SqlParameter() { ParameterName = "@categoryID", Value = string.IsNullOrEmpty(_catid) ?  (object)DBNull.Value : _catid.ToString() },
+                    new SqlParameter() { ParameterName = "@subcategoryID",Value = string.IsNullOrEmpty(_subcatid) ? (object)DBNull.Value : _subcatid.ToString()  },
+                    new SqlParameter() { ParameterName = "@selectionid", Value = string.IsNullOrEmpty(_selectionid) ? (object)DBNull.Value : _selectionid.ToString() },
+                    new SqlParameter() { ParameterName = "@assignedto",  Value = string.IsNullOrEmpty(_assginedtoid) ? (object)DBNull.Value: _assginedtoid.ToString() },
                     new SqlParameter() { ParameterName = "@statusid",  Value = ddlTicketStatus.SelectedValue.ToString() },
-                    new SqlParameter() { ParameterName = "@Ticketid",  Value = tbTicketID.Text == null ? (object)DBNull.Value: tbTicketID.Text.ToString()},
-                    new SqlParameter() { ParameterName = "@ComputerID", Value = _computerID == null ? (object)DBNull.Value:_computerID.ToString() },
+                    new SqlParameter() { ParameterName = "@Ticketid",  Value = string.IsNullOrEmpty(tbTicketID.Text) ? (object)DBNull.Value: tbTicketID.Text.ToString()},
+                    new SqlParameter() { ParameterName = "@ComputerID", Value = string.IsNullOrEmpty(_computerID) ? (object)DBNull.Value:_computerID.ToString()},
                     new SqlParameter() { ParameterName = "@lastupdated", Value = System.DateTime.Now.ToString()},
+                    new SqlParameter() { ParameterName = "@Createdby", Value = hfcreatedid.Value.ToString()},
                     new SqlParameter() { ParameterName = "@updatedbyid", Value = lbluserID.Value.ToString()},
-                    new SqlParameter() { ParameterName = "@DateClosed", Value = _computerID == null ? (object)DBNull.Value:tbDateClosed.Text.ToString() }
+                    new SqlParameter() { ParameterName = "@DateCreated", Value=tbDateCreated.Text.ToString()},
+                    new SqlParameter() { ParameterName = "@type", Value = "Update"},
+                    new SqlParameter() { ParameterName = "@ClosedByID", Value = string.IsNullOrEmpty(hfClosedbyID.Value) ?(object)DBNull.Value: hfClosedbyID.Value.ToString() },
+                    new SqlParameter() { ParameterName = "@DateClosed", Value = string.IsNullOrEmpty(_closedbyDate.ToString()) ? (object)DBNull.Value:tbDateClosed.Text.ToString()}
                 };
                 sqlTypeCommands sql = new sqlTypeCommands();
-                success = sql.CommadSQL(query, false, sp);
+                success = sql.CommandSQL(query, true, sp);
                 if (success != "")
                     lblMessage.Text = success.ToString();
                 else
@@ -517,6 +557,7 @@ namespace Help_Desk
             }
             else
             {
+                hfIsTicketNew.Value = "true";
                 if (ddlComputers.SelectedValue.ToString() == "-1")
                 {
                     _computerID = null;
@@ -530,8 +571,6 @@ namespace Help_Desk
                     _subcatid = null;
                 if (ddlSelection.SelectedValue == "")
                     _selectionid = null;
-
-
                 if ((ddlCategory.SelectedValue.ToString() == "-1") || (ddlCategory.SelectedValue.ToString() == ""))
                     _catid = null;
                 else
@@ -552,22 +591,29 @@ namespace Help_Desk
                 else
                     _assginedtoid = ddlTechs.SelectedValue.ToString();
 
-                query = "insert ticket (datecreated,createdby, personid, description, categoryid, subcategoryid, selectionid, computerid, assignedto, statusid) values (@datecreated, @createdby, @personid, @description, @categoryid, @subcategoryid, @selectionid, @computerid, @assignedto, @statusid)";
+                query = "save_ticket";
                 List<SqlParameter> sp = new List<SqlParameter>
                 {
                     new SqlParameter() { ParameterName = "@personid",  Value=ddlTicketPersons.SelectedValue.ToString()},
-                    new SqlParameter() { ParameterName = "@createdby", Value=hfcreatedid.Value.ToString()},
-                    new SqlParameter() { ParameterName = "@description",  Value=tbNotes.Text.ToString()},
+                    new SqlParameter() { ParameterName = "@description",  Value=taDescription.Value.ToString()},
                     new SqlParameter() { ParameterName = "@categoryID", Value = _catid == null ? (object)DBNull.Value : _catid.ToString()},
                     new SqlParameter() { ParameterName = "@subcategoryID",Value = _subcatid == null ? (object)DBNull.Value : _subcatid.ToString()  },
                     new SqlParameter() { ParameterName = "@selectionid", Value = _selectionid == null ? (object)DBNull.Value : _selectionid.ToString() },
                     new SqlParameter() { ParameterName = "@assignedto",  Value = _assginedtoid == null ? (object)DBNull.Value: _assginedtoid.ToString() },
                     new SqlParameter() { ParameterName = "@statusid",  Value = ddlTicketStatus.SelectedValue.ToString() },
+                    new SqlParameter() { ParameterName = "@Ticketid", Value = "-1"},
                     new SqlParameter() { ParameterName = "@ComputerID", Value = _computerID == null ? (object)DBNull.Value:_computerID.ToString() },
-                    new SqlParameter() { ParameterName = "@DateCreated", Value = System.DateTime.Now.ToString()}
-                                   };
+                    new SqlParameter() { ParameterName = "@lastupdated", Value = (object)DBNull.Value},
+                    new SqlParameter() { ParameterName = "@Createdby", Value=hfcreatedid.Value.ToString()},
+                    new SqlParameter() { ParameterName = "@updatedbyid", Value =(object)DBNull.Value},
+                    new SqlParameter() { ParameterName = "@DateCreated", Value = System.DateTime.Now.ToString()},
+                    new SqlParameter() { ParameterName = "@type", Value = "Insert"},
+                    new SqlParameter() { ParameterName = "@ClosedByID", Value = (object)DBNull.Value},
+                    new SqlParameter() { ParameterName = "@DateClosed", Value = (object)DBNull.Value },
+
+                };
                 sqlTypeCommands sql = new sqlTypeCommands();
-                success = sql.CommadSQL(query, false, sp);
+                success = sql.CommandSQL(query, true, sp);
                 if (success != "")
                 {
 
@@ -588,8 +634,9 @@ namespace Help_Desk
                         }
                     }
 
+                    updateTicketDate();
                     _notes = "New ticket #" + lblMyTicketID.Value.ToString() + " was created by " + lbluserName.Value.ToString() + " on " + System.DateTime.Now.ToString();
-                }
+               }
             }
 
             if (_notes != "")
@@ -606,8 +653,29 @@ namespace Help_Desk
                         tbTicketID.Text = dt.Rows[0].ItemArray[0].ToString();
                     }
                 }
+
+                DataTable dt2 = new DataTable();
+                string url = "http://" + HttpContext.Current.Request.Url.Host.ToString() + "/ThisTicket.aspx?TID=" + lblMyTicketID.Value.ToString();
+                string TicketURL = string.Format("\n To update your ticket, click {0}", "<a href=" + url + ">here</a>");
+
+                if ((ddlSelection.SelectedValue.ToString() != null) || (ddlSelection.SelectedValue.ToString() == "-1"))
+                {
+                    query = "select emailbody from selection where selectionid = " + ddlSelection.SelectedValue.ToString();
+                    dt2 = sql.ReturnDatatable(query);
+                    if (dt2.Rows.Count > 0)
+                    {
+                        string NewNote = getEmailParameters(dt2.Rows[0].ItemArray[0].ToString());
+
+                        if (!string.IsNullOrEmpty(dt2.Rows[0].ItemArray[0].ToString()))
+                            _notes = _notes + "\n" + dt2.Rows[0].ItemArray[0].ToString();
+                    }
+                }
+                //_notes += "\n Click the following update your ticket: /n http://" + 
+                //    HttpContext.Current.Request.Url.Host.ToString() + "/ThisTicket.aspx?TID=" + lblMyTicketID.Value.ToString();
                 query = "insert into  ticketnotes (ticketid, personid, datecreated, notes) values ('" + lblMyTicketID.Value.ToString() + "' , '" + lbluserID.Value.ToString() + "', '" + System.DateTime.Now.ToString() + "', '" + _notes + "')";
-                sql.CommadSQL(query, false, null);
+                sql.CommandSQL(query, false, null);
+    
+                _notes = _notes + TicketURL.ToString();
 
                 Email email = new Email();
 
@@ -617,7 +685,7 @@ namespace Help_Desk
 
                 email.sendEmail(ddlTechs.SelectedValue.ToString(), "Ticket ID # " + lblMyTicketID.Value.ToString(), _notes.ToString());
 
-                sql.UpdateSecurityLog(lbluserID.Value.ToString(), _notes.ToString());   
+                sql.UpdateSecurityLog(lbluserID.Value.ToString(), _notes.ToString());
             }
         }
 
@@ -633,21 +701,21 @@ namespace Help_Desk
                 string s = "admin.aspx?uid=" + lbluserID;
                 Response.Redirect(s, true);
             }
-            else
+            else 
                 Response.Redirect("Tickets.aspx", true);
         }
 
-        
+
         protected void menuTicket_MenuItemClick(object sender, MenuEventArgs e)
         {
             switch (menuTicket.SelectedItem.Text)
             {
-                case "Save":
+                case "Save Ticket":
                     saveTicket();
                     Response.Redirect("Tickets.aspx", true);
                     break;
                 case "Cancel":
-                    returnToTicket();                    
+                    returnToTicket();
                     break;
             }
         }
@@ -661,7 +729,7 @@ namespace Help_Desk
                 hfChanges.Value += " subcategory changed to " + ddlSubCategory.SelectedItem.ToString();
                 sidenotes = " subcategory changed to " + ddlSubCategory.SelectedItem.ToString();
             }
-              
+
         }
 
         protected void ddlCategory_SelectedIndexChanged(object sender, EventArgs e)
@@ -674,12 +742,11 @@ namespace Help_Desk
                 sidenotes = " category changed to " + ddlCategory.SelectedItem.ToString();
             }
 
-            ddlSelection.Items.Clear();
         }
 
         protected void ddlTicketStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
             if (lblNewTicket.Value == "false")
             {
                 lblchangeMade.Value = "true";
@@ -690,8 +757,8 @@ namespace Help_Desk
                     hfChanges.Value += " ticket status changed to " + ddlTicketStatus.SelectedItem.ToString();
                     sidenotes = " ticket status changed to " + ddlTicketStatus.SelectedItem.ToString();
                 }
-                
-            }
+                updateTicketDate();
+        }
         }
 
         protected void ddlTechs_SelectedIndexChanged(object sender, EventArgs e)
@@ -730,9 +797,37 @@ namespace Help_Desk
 
         }
 
-        protected void tbNotes_TextChanged(object sender, EventArgs e)
+        protected void updateTicketDate()
         {
-            if ((lblNewTicket.Value == "false") || (tbNotes.Text != tbNotesHidden.Text))
+            string query = "sp_insert_update_Ticket_dates";
+            sqlTypeCommands sql = new sqlTypeCommands();
+            List<SqlParameter> sp2 = new List<SqlParameter>
+                    {
+                        new SqlParameter() { ParameterName ="@Ticketstatusid", Value = ddlTicketStatus.SelectedValue.ToString() },
+                        new SqlParameter() { ParameterName ="@personid", Value = lbluserID.Value.ToString() },
+                        new SqlParameter() { ParameterName = "@ticketid", Value=lblMyTicketID.Value.ToString() },
+                        new SqlParameter() { ParameterName = "@ticketdate", Value = System.DateTime.Now.ToString()}
+                    };
+            string success = sql.CommandSQL(query, true, sp2);
+            if (success != "")
+            {
+                MessageBox.show(this.Page, success);
+            }
+
+        }
+
+        protected void taDescription_TextChanged(object sender, EventArgs e)
+        {
+            if ((lblNewTicket.Value == "false") || (taDescription.Value != tbDescriptionHidden.Text))
+            {
+                lblchangeMade.Value = "true";
+                hfChanges.Value += " description changed.";
+                sidenotes = " description changed.";
+            }
+        }
+        protected void tbDescription_TextChanged(object sender, EventArgs e)
+        {
+            if ((lblNewTicket.Value == "false") || (taDescription.Value != tbDescriptionHidden.Text))
             {
                 lblchangeMade.Value = "true";
                 hfChanges.Value += " description changed.";
@@ -742,42 +837,71 @@ namespace Help_Desk
 
         protected void bnAddNote_Click(object sender, EventArgs e)
         {
-            if (tbNewNote.Text != "") 
+            sqlTypeCommands sql = new sqlTypeCommands();
+
+            if (taNewNote.Value != "") 
             {
+                string update2 = "update ticket set lastupdated = @lastupdated, updatedbyid = @updatedbyid where ticketid = @ticketid";
+                List<SqlParameter> sp2 = new List<SqlParameter>
+                {
+                    new SqlParameter() { ParameterName = "@lastupdated", Value = DateTime.Now.ToString()},
+                    new SqlParameter() { ParameterName = "@updatedbyid", Value = lbluserID.Value.ToString() },
+                    new SqlParameter() { ParameterName = "@ticketid", Value = tbTicketID.Text.ToString()}
+                    };
+                string result = sql.CommandSQL(update2, false, sp2);
+                if (result !="")
+                {
+                    lblMessage.Text = result.ToString();
+                    lblMessage.Visible = true;
+                }
+
                 String query = "insert into ticketnotes (TicketID, PersoniD, datecreated, Notes) values (@ticketid, @personid, @datecreated, @notes)";
-                sqlTypeCommands sql = new sqlTypeCommands();
                 List<SqlParameter> sp = new List<SqlParameter>
                 {
                     new SqlParameter() { ParameterName = "@personid",  Value=lbluserID.Value.ToString()},
                     new SqlParameter() { ParameterName = "@ticketID", Value = lblMyTicketID.Value.ToString()},
                     new SqlParameter() { ParameterName = "@datecreated", Value = DateTime.Now.ToString()},
-                    new SqlParameter() { ParameterName = "@notes", Value = tbNewNote.Text.ToString()}
+                    new SqlParameter() { ParameterName = "@notes", Value = taNewNote.Value }
                 };
-               string result  = sql.CommadSQL(query, false, sp);
+               result  = sql.CommandSQL(query, false, sp);
                 if (result != "")
                 {
                     lblMessage.Text = result.ToString();
+                    lblMessage.Visible = true;
                 }
                 else
                 {
                     query = "";
-                    if ((lblisTech.Value.ToString() == "true") || (lblisAdmin.Value.ToString() == "true"))
+                    if (lblIsTech.Value.ToString() == "true")
                     {
 
-                        if (((ddlTicketStatus.SelectedValue.ToString() == "0") || (ddlTicketStatus.SelectedValue.ToString() == "1")) &&
-                        (ddlTechs.SelectedValue == "1"))
+                        string url = "http://" + HttpContext.Current.Request.Url.Host.ToString() + "/ThisTicket.aspx?TID=" + lblMyTicketID.Value.ToString();
+                        string TicketURL = string.Format("\n To update your ticket, click {0}", "<a href=" + url + ">here</a>");
+                        if ((ddlTicketStatus.SelectedValue.ToString() == "0") || (ddlTicketStatus.SelectedValue.ToString() == "1"))
                         {
                             ddlTicketStatus.SelectedValue = "2";
-                            ddlTechs.SelectedValue = lbluserID.Value.ToString();
-                            query = "update ticket set statusID = 1, assignedto = " + lbluserID.Value.ToString() + " where ticketid = " + lblMyTicketID.Value.ToString();
-                            sql.CommadSQL(query, false, null);
+                            query = "update ticket set statusID = 2 where ticketid = " + lblMyTicketID.Value.ToString();
+                            if (ddlTicketStatus.SelectedValue.ToString() == "0")
+                            {
+                                ddlTechs.SelectedValue = lbluserID.Value.ToString();
+                                query = "update ticket set statusID = 2, assignedto = " + lbluserID.Value.ToString() + " where ticketid = " + lblMyTicketID.Value.ToString();
+                            }
+                            sql.CommandSQL(query, false, null);
+                            sendEmail("Ticket ID " + lblMyTicketID.Value.ToString() + " assigned", ddlTicketPersons.SelectedValue.ToString(), lblMyTicketID.Value.ToString(), "The Ticket is assigned to " + ddlTechs.SelectedItem.ToString() +  TicketURL);
+                            sendEmail("Ticket ID " + lblMyTicketID.Value.ToString() + " assigned", ddlTechs.SelectedValue.ToString(), lblMyTicketID.Value.ToString(), "The Ticket is assigned to " + ddlTechs.SelectedItem.ToString() +  TicketURL);
+                            updateTicketDate();
                         }
+
+                        
                         if (ddlTicketPersons.SelectedValue != hfcreatedid.Value.ToString())
-                            sendEmail("New note on Ticket ID " + lblMyTicketID.Value.ToString(), ddlTicketPersons.SelectedValue.ToString(), lblMyTicketID.Value.ToString(), tbNewNote.Text.ToString());
-                        sendEmail("New note on Ticket ID " + lblMyTicketID.Value.ToString(), hfcreatedid.Value.ToString(), lblMyTicketID.Value.ToString(), tbNewNote.Text.ToString());
-                        sendEmail("New note on Ticket ID " + lblMyTicketID.Value.ToString(), ddlTechs.SelectedValue.ToString(), lblMyTicketID.Value.ToString(), tbNewNote.Text.ToString());
+                            sendEmail("New note on Ticket ID " + lblMyTicketID.Value.ToString(), ddlTicketPersons.SelectedValue.ToString(), lblMyTicketID.Value.ToString(), taNewNote.Value.ToString() +  TicketURL );
+                        
+
+                        sendEmail("New note on Ticket ID " + lblMyTicketID.Value.ToString(), hfcreatedid.Value.ToString(), lblMyTicketID.Value.ToString(), taNewNote.Value.ToString() +  TicketURL);
+                        sendEmail("New note on Ticket ID " + lblMyTicketID.Value.ToString(), ddlTechs.SelectedValue.ToString(), lblMyTicketID.Value.ToString(), taNewNote.Value.ToString() + TicketURL);
                         sql.UpdateSecurityLog(lbluserID.Value.ToString(), "New note on Ticket ID " + lblMyTicketID.Value.ToString());
-                        tbNewNote.Text = "";
+
+                        taNewNote.Value  = "";
                         newnote = false;
                         getTicket();
                         getTicketNotes();
@@ -786,9 +910,6 @@ namespace Help_Desk
             }
         }
 
-        protected void tbNewNote_TextChanged(object sender, EventArgs e)
-        {
-        }
 
         protected void sendEmail(string subject, string toid, string ticketid, string data)
         {
@@ -796,8 +917,122 @@ namespace Help_Desk
             bool result = email.sendEmail(toid, subject, data);
             if (!result)
                 lblMessage.Text = "Email failed";
+        }
+
+        protected void getTechNotes()
+        {
+            hfTechNotesID.Value = "-1";
+            string query;
+            query = "select * from V_technotes where ticketid = " + lblMyTicketID.Value.ToString() + " order by datecreated desc";
+            if (lblMyTicketID.Value != "-1")
+            {
+                DataTable dt = new DataTable();
+                sqlTypeCommands sql = new sqlTypeCommands();
+                dt = sql.ReturnDatatable(query);
+                gvTechNotes.DataSource = null;
+                gvTechNotes.DataBind();
+                if (dt.Rows.Count > 0)
+                {
+                    gvTechNotes.DataSource = dt;
+                    gvTechNotes.DataBind();
+                }
+            }
+        }
+
+        protected void SQLTechNotes(string spType)
+        {
+            string query = "sp_add_update_delete_TechNotes";
+            int techid;
+            sqlTypeCommands sql = new sqlTypeCommands();
+            if (lblIsTech.Value == "false")
+                techid = 0;
+            else
+                techid = Convert.ToInt16(lbluserID.Value.ToString());
+            List<SqlParameter> sp = new List<SqlParameter>
+            {
+                new SqlParameter() { ParameterName = "@Ticketid",  Value=lblMyTicketID.Value.ToString()},
+                new SqlParameter() { ParameterName = "@spType", Value = spType.ToString()},
+                new SqlParameter() { ParameterName = "@techNotes", Value = taTechNotes.Value.ToString()},
+                new SqlParameter() { ParameterName = "@techID", Value = techid.ToString()},
+                new SqlParameter() { ParameterName = "@dateCreated", Value =System.DateTime.Now.ToString()},
+                new SqlParameter() { ParameterName = "@techNotesID", Value = hfTechNotesID.Value.ToString()}
+            };
+            string result = sql.CommandSQL(query, true, sp);
+            if (result != "")
+                MessageBox.show(this.Page,result);
+            taTechNotes.Value = "";
+            getTechNotes();
+        }
+
+        protected void editTechNote(int index)
+        {
+            taTechNotes.Value = gvTechNotes.Rows[index].Cells[5].Text.ToString();
+        }
+
+        protected void saveTechNotes()
+        {
+            if (hfTechNotesID.Value == "-1")
+                SQLTechNotes("Insert");
+            else
+                SQLTechNotes("Update");
+
+         }
+
+        protected void btnTechNotes_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(tbTechNotespassword.Text))
+                if (btnTechNotes.Text == "Logout")
+                {
+                    gvTechNotes.DataSource = null;
+                    gvTechNotes.DataBind();
+                    hfTechNotes.Value = "false";
+                    pnlTechNotes.Visible = false;
+                    btnSaveTechNotes.Text = "Save Tech Notes";
+                }
+                else
+                {
+
+                    DataTable dt = new DataTable();
+                    sqlTypeCommands sql = new sqlTypeCommands();
+                    string query = "select techpassword from settings";
+                    dt = sql.ReturnDatatable(query);
+                    string techpass = dt.Rows[0].ItemArray[0].ToString();
+                    if (techpass == tbTechNotespassword.Text.ToString())
+                    {
+                        hfTechNotes.Value = "true";
+                        btnTechNotes.Text = "Logout";
+                        getTechNotes();
+                        pnlTechNotes.Visible = true;
+                    }
+                }
+        }
+
+        protected void tbTechNotes_TextChanged(object sender, EventArgs e)
+        {
 
         }
 
+        protected void btnSaveTechNotes_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(taTechNotes.Value))
+            {
+                saveTechNotes();
+            }
+        }
+
+        protected void gvTechNotes_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            int index = Convert.ToInt32(e.CommandArgument);
+            GridViewRow selectedRow = gvTechNotes.Rows[index];
+            hfTechNotesID.Value = selectedRow.Cells[2].Text.ToString();
+            if (e.CommandName == "TechNoteDelete")
+            {
+                SQLTechNotes("Delete");
+            }
+            if (e.CommandName == "TechNoteEdit")
+            {
+                editTechNote(index);
+            }
+        }
     }
 }

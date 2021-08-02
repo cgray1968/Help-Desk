@@ -12,7 +12,7 @@ namespace Help_Desk
 {
     public partial class Tickets : System.Web.UI.Page
     {
-        public bool _isTech;
+        public bool _isTech = false;
         public bool _isAdmin = false;
         public bool _statusChange = false;
         public bool _newTicket = false;
@@ -29,24 +29,33 @@ namespace Help_Desk
             getUserID();
             sqlTypeCommands sql = new sqlTypeCommands();
             _isTech = sql.getIsTech(_userID);
+            _isAdmin = sql.getIsAdmin(_userID);
+           
 
             if (!IsPostBack)
             {
                 getMessage();
                 getStatus();
-                if (_isTech)
+               
+                if ((_isAdmin) || (_isTech))
                 {
-                    menuTicket.Items[4].Selectable = true;
-                    menuTicket.Items[2].Selectable = true;
-                    _isTech = true;
                     setTech();
-                }
+                }    
+                else 
+                {
+                    
+                    menuTicket.Items.Remove(menuTicket.FindItem("AssignTicket"));
+                    menuTicket.Items.Remove(menuTicket.FindItem("|2"));
+                    menuTicket.Items.Remove(menuTicket.FindItem("Admin"));
+                    menuTicket.Items.Remove(menuTicket.FindItem("|3"));
+                }    
 
                 getTicketIDs();
                 getTickets();
             }
         }
 
+        
         public DropDownList updateDropDownList(string value, string text, string query)
         {
             DropDownList ddl = new DropDownList();
@@ -73,8 +82,8 @@ namespace Help_Desk
             sqlTypeCommands sql = new sqlTypeCommands();
             String query = "Select TicketID from v_tickets";
            
-            if (!_isTech)
-                query += " where personid = " + _userID;
+            if ((!_isTech) || (!_isAdmin))
+                query += " where personid = " + _userID + " or createdbyid = " + _userID;
             query += " order by ticketid";
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
@@ -87,7 +96,6 @@ namespace Help_Desk
                 ddlTickets.DataBind();
             }
 
-            ddlTickets = updateDropDownList("ticketID", "TicketID", query);
             ddlTickets.Items.Insert(0, new ListItem("Select Ticket", "-1"));
             ddlTickets.SelectedIndex = 0;
 
@@ -95,7 +103,7 @@ namespace Help_Desk
 
         protected void getUserID()
         {
-            string query = "select personid from login where loginName = '" + _userName + "'";
+            string query = "select personid from person where loginName = '" + _userName + "'";
             DataTable dt1 = new DataTable();
             sqlTypeCommands sql = new sqlTypeCommands();
             dt1 = sql.ReturnDatatable(query);
@@ -160,35 +168,76 @@ namespace Help_Desk
             String query = "Select * from v_tickets ";
             string statusid = ddlStatus.SelectedValue.ToString();
             ;
-            if (_isTech)
+            if ((_isTech) || (_isAdmin))
             {
-
                 if (menuTicket.Items[2].Text == "Assigned Tickets")
                 {
-                    if (statusid == "6")
-                        query += " where assignedID = " + _userID;
+                    if (statusid != "6")
+                        query += " where assignedID = " + _userID + "  and statusid = " + statusid;
                     else
-                        query += " where assignedID = " + _userID +  "  and statusid = " + statusid;
+                        query += " where assignedID = " + _userID ;
                 }
                 else
                     if (statusid != "6")
                             query += " where statusid = " + statusid;
             }
             else
-                if (statusid == "6")
-                query += " where personid = " + _userID;
-            else
-                query += " where personid = " + _userID + " and statusid = " + statusid;
+                query += " where personid = " + _userID + " or CreatedbyID = " + _userID;
+            if (statusid != "6")
+                query += " and statusid = " + statusid;
+            query += " order by statusid, lastupdate";
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
             {
                 gvTickets.DataSource = dt;
                 gvTickets.DataBind();
-               
+            }
+
+            if ((_isTech) || (_isAdmin))
+            {
+                string result;
+                string message = "<p><span style = 'background: red;' > Red - Ticket is older than 1 week.<br/></span><span style='background: Orange;'>Orange - Ticket is older than 3 days.<br/></span><span style='color:Black;'>Black - Normal ticket.</span></p>";
+                lblAdminNotes.Text= message;
+                lblAdminNotes.Visible = true;
+                DateTime oneWeek = System.DateTime.Today.AddDays(-7).Date;
+                DateTime threeDays = System.DateTime.Today.AddDays(-3).Date;
+                foreach (GridViewRow row in gvTickets.Rows)
+                {
+                    int status = Convert.ToInt32(row.Cells[11].Text.ToString());
+                    if (status < 3)
+                    {
+                        result = getDate(row.Cells[1].Text.ToString(), row.Cells[11].Text.ToString());
+                        DateTime ticketDate = Convert.ToDateTime(result).Date;
+
+                        if (ticketDate.Date <= System.DateTime.Today.AddDays(-6))
+                        {
+                            row.BackColor = System.Drawing.Color.Red;
+                            row.Cells[11].ForeColor = System.Drawing.Color.Red;
+                        }
+                        else if (ticketDate.Date <= System.DateTime.Today.AddDays(-3))
+                        {
+                            row.BackColor = System.Drawing.Color.Orange;
+                            row.Cells[11].ForeColor = System.Drawing.Color.Orange;
+                        }
+                    }
+                }
             }
         }
 
-
+        protected string getDate(string ticketid, string statusid)
+        {
+            string result = "";
+            //select ticketdate from TicketDate where ticketid=43 and ticketstatusid = 1
+            string query = "select ticketdate from ticketdate where ticketid = " + ticketid + " and ticketstatusid = " + statusid;
+            DataTable dt = new DataTable();
+            sqlTypeCommands sql = new sqlTypeCommands();
+            dt = sql.ReturnDatatable(query);
+            if (dt.Rows.Count > 0)
+            {
+                result = dt.Rows[0].ItemArray[0].ToString();
+            }    
+            return result;
+        }
         protected void NewTicket()
         {
             ThisTicket ticket = new ThisTicket();
@@ -208,7 +257,7 @@ namespace Help_Desk
  
         protected void AssignedTickets()
         {
-            if (_isTech)
+            if ((_isTech) || (_isAdmin))
             {
 
                 if (menuTicket.Items[2].Text == "Assigned Tickets")
@@ -225,11 +274,6 @@ namespace Help_Desk
         protected void Logout()
         {
             FormsAuthentication.RedirectToLoginPage();
-        }
-
-        protected void bnImage_Click(object sender, EventArgs e)
-        {
-
         }
 
         protected void Admin()
@@ -259,16 +303,6 @@ namespace Help_Desk
             }
         }
 
-        protected void btnAssign_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void btnEdit_Click(object sender, EventArgs e)
-        {
-
-        }
-
 
         protected void gvTickets_RowCommand(object sender, GridViewCommandEventArgs e)
         {
@@ -286,12 +320,6 @@ namespace Help_Desk
             ThisTicket ticket = new ThisTicket();
             ticket.Session["TicketID"] = TicketID.ToString();
             Server.Transfer("ThisTicket.aspx");
-
-        }
-
-
-        protected void gvNotes_RowCommand(object sender, GridViewCommandEventArgs e)
-        {
 
         }
 
