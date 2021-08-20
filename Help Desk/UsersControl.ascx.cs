@@ -14,15 +14,17 @@ namespace Help_Desk
     public partial class UsersControl : System.Web.UI.UserControl
     {
         public bool _recordChange;
+        private bool _newUser;
+        private sqlTypeCommands sql = new sqlTypeCommands();
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if ((!IsPostBack) || (ddlGetUser.Items.Count == 0))
+            if (!IsPostBack)
             {
                 hfRecordChange.Value = "true";
                 pnlUserInfo.Visible = false;
-                getUserDDL();
-                getUserRole();
+                getNewDepartment();
+                getNewUserDDL();
                 hflNewUserID.Value = "-2";
                 hfNewRecord.Value = "false";
                 hfRecordChange.Value = "false";
@@ -33,7 +35,6 @@ namespace Help_Desk
         protected void deleteUser(string uid)
         {
             string query = "delete from person where person_id = '" + uid.ToString() + "'";
-            sqlTypeCommands sql = new sqlTypeCommands();
             string result;
             result = sql.CommandSQL(query, false, null);
             if (result.ToString() != "")
@@ -48,7 +49,6 @@ namespace Help_Desk
             gv.DataSource = null;
             gv.DataBind();
             DataTable dt = new DataTable();
-            sqlTypeCommands sql = new sqlTypeCommands();
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
             {
@@ -72,10 +72,10 @@ namespace Help_Desk
             tbNewUserLastName.Text = "";
             tbNewUserEmail.Text = "";
             tbNewUserLogin.Text = "";
-            if (ddlNewUserRole.Items.Count == 0)
-                getUserRole();
-            ddlNewUserRole.SelectedIndex = 0;
-            if (ddlNewUserDepartment.Items.Count == 0)
+            if (ddlUserRole.Items.Count <= 1)
+                getRoles();
+            ddlUserRole.SelectedIndex = 0;
+            if (ddlNewUserDepartment.Items.Count <= 1)
                 getNewUserDepartment();
             ddlNewUserDepartment.SelectedIndex = 0;
 
@@ -83,27 +83,11 @@ namespace Help_Desk
 
         protected void getUserDDL()
         {
-            getNewDepartment();
+//            getNewDepartment();
             getNewUserDDL();
         }
 
-        protected void getNewUserDepartment()
-        {
-            string query = "select departmentid, departmentname from department order by departmentname";
-            DataTable dt = new DataTable();
-            sqlTypeCommands sql = new sqlTypeCommands();
-            dt = sql.ReturnDatatable(query);
-            if (dt.Rows.Count > 0)
-            {
-                ddlNewUserDepartment.DataSource = null;
-                ddlNewUserDepartment.DataBind();
-                ddlNewUserDepartment.DataSource = dt;
-                ddlNewUserDepartment.DataTextField = "DepartmentName";
-                ddlNewUserDepartment.DataValueField = "DepartmentID";
-                ddlNewUserDepartment.DataBind();
-                ddlNewUserDepartment.Items.Insert(0, new ListItem("No Department", "-1"));
-            }
-        }
+
 
         protected void getUserComputer()
         {
@@ -130,7 +114,6 @@ namespace Help_Desk
                 {
                 string query = "select distinct computerid, computername from V_User_Computers where personID not in(" + ddlGetUser.SelectedValue.ToString() + ")";
                 DataTable dt = new DataTable();
-                sqlTypeCommands sql = new sqlTypeCommands();
                 dt = sql.ReturnDatatable(query);
                 if (dt.Rows.Count > 0)
                 {
@@ -145,13 +128,87 @@ namespace Help_Desk
 
         }
 
+        protected void getNewUserDepartment()
+        {
+            string query = "select departmentid, departmentname from department order by departmentname";
+            DataTable dt = new DataTable();
+            dt = sql.ReturnDatatable(query);
+            if (dt.Rows.Count > 0)
+            {
+                ddlNewUserDepartment.DataSource = null;
+                ddlNewUserDepartment.DataBind();
+                ddlNewUserDepartment.DataSource = dt;
+                ddlNewUserDepartment.DataTextField = "DepartmentName";
+                ddlNewUserDepartment.DataValueField = "DepartmentID";
+                ddlNewUserDepartment.DataBind();
+                ddlNewUserDepartment.Items.Add(new ListItem { Text = "No Department", Value = "-1" });
+            }
+        }
+
+        protected void getRoles()
+        {
+            string query = "sp_Get_roles";
+            try
+            {
+                string s = "";
+                DataTable roles = new DataTable();
+                roles = sql.ReturnDTFromSproc(query);
+                ddlUserRole.Items.Clear();
+                ddlUserRole.Items.Add(new ListItem { Text = "Select Role", Value = "-1" });
+                foreach (DataColumn c in roles.Columns)
+                {
+                    s = s + c.ColumnName + Environment.NewLine;
+                }
+                if (roles.Rows.Count > 0)
+                {
+
+                    foreach (DataRow r in roles.Rows)
+                    {
+                        ddlUserRole.Items.Add(new ListItem { Text = r[1].ToString(), Value = r[0].ToString() });
+                    }
+                   
+                }
+            }
+            catch (SystemException ex)
+            {
+                MessageBox.show(this.Page, ex.ToString());
+            }
+        }
+
+        //protected void UserRole()
+        //{
+        //    string query = "sp_Get_Roles";
+        //    try
+        //    {
+        //        DataTable roles = new DataTable();
+        //        roles = sql.ReturnDTFromSproc(query);
+        //        if (roles.Rows.Count > 0)
+        //        {
+        //            ddlUserRole.DataSource = null;
+        //            ddlUserRole.DataBind();
+        //            ddlUserRole.DataSource = roles;
+        //            ddlUserRole.DataTextField = "RoleName";
+        //            ddlUserRole.DataValueField = "RoleID";
+        //            ddlUserRole.DataBind();
+        //            ddlUserRole.Items.Add(new ListItem { Text = "Select Role", Value = "-1" });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    finally
+        //    {
+
+        //    }
+        //}
+            
         protected void AddComputer()
         {
             if ((ddlSelectComputer.SelectedValue != "-1") ||
                 (hflNewUserID.Value != "-1"))
             {
                 string query = "UpdateUserComputer";
-                sqlTypeCommands sql = new sqlTypeCommands();
                 List<SqlParameter> sp = new List<SqlParameter>
             {
                     new SqlParameter() { ParameterName = "@personid",  Value=ddlGetUser.SelectedValue.ToString()},
@@ -163,29 +220,11 @@ namespace Help_Desk
             }
         }
 
-        protected void getUserRole()
-        {
-            string query = "select roleid, role from role";
-            DataTable dt = new DataTable();
-            sqlTypeCommands sql = new sqlTypeCommands();
-            dt = sql.ReturnDatatable(query);
-            if (dt.Rows.Count > 0)
-            {
-                ddlNewUserRole.DataSource = null;
-                ddlNewUserRole.DataBind();
-                ddlNewUserRole.DataSource = dt;
-                ddlNewUserRole.DataValueField = "roleid";
-                ddlNewUserRole.DataTextField = "role";
-                ddlNewUserRole.DataBind();
-            }
-            ddlNewUserRole.Items.Insert(0, new ListItem("Select Role", "-1"));
-            ddlNewUserRole.SelectedIndex = 0;
-        }
+ 
 
         protected void deleteUserComputer()
         {
             String query = "delete from computerUser where computerid = " + hfComputerID.Value.ToString() + " and personid = " + ddlGetUser.SelectedValue.ToString();
-            sqlTypeCommands sql = new sqlTypeCommands();
             string result = sql.CommandSQL(query, false, null);
             lblMessage.Text = result.ToString();
             setMessagelbl(result);
@@ -195,68 +234,65 @@ namespace Help_Desk
 
         protected void getNewUserInfo()
         {
-            if (ddlGetUser.SelectedIndex.ToString() != "0")
-            {
-                hfRecordChange.Value = "true";
-                hfNewRecord.Value = "false";
-                DataTable user = new DataTable();
-                DataTable dt = new DataTable();
-                sqlTypeCommands sql = new sqlTypeCommands();
-                string query;
-                pnlUserInfo.Visible = true;
-                //get user info
-                query = "select * from v_users where personid = " + ddlGetUser.SelectedValue.ToString();
-                user = sql.ReturnDatatable(query);
-                if (user.Rows.Count > 0)
+            hfRecordChange.Value = "true";
+            hfNewRecord.Value = "false";
+            DataTable userInfo = new DataTable();
+            DataTable dt = new DataTable();
+            string query;
+            pnlUserInfo.Visible = true;
+            //get user info
+                //get DDL For Department
+                if (ddlNewUserDepartment.Items.Count <= 1)
                 {
-                    //get DDL For Department
-                    if (ddlNewUserDepartment.Items.Count == 0)
-                    {
-                        getNewUserDepartment();
+                    getNewUserDepartment();
 
-                    }
-
-                    //Get DDL Roles
-                    if (ddlNewUserRole.Items.Count == 0)
-                    {
-                        getUserRole();
-                    }
-
-                    ddlNewUserDepartment.SelectedValue = user.Rows[0].ItemArray[5].ToString();
-                    //get DDL Tickets
-                    query = "select ticketID, " + hflNewUserID.Value.ToString() + " as PersonID,  description from ticket where personid = " + ddlGetUser.SelectedValue.ToString();
-                    updateGridview(gvNewUserTickets, query);
-                    query = "select * from v_users where personID = " + ddlGetUser.SelectedValue.ToString();
-                    dt.Reset();
-                    dt = sql.ReturnDatatable(query);
-                    if (dt.Rows.Count > 0)
-                    {
-                        tbNewUserFirstName.Text = dt.Rows[0].ItemArray[1].ToString();
-                        tbNewUserLastName.Text = dt.Rows[0].ItemArray[2].ToString();
-                        tbNewUserEmail.Text = dt.Rows[0].ItemArray[3].ToString();
-                        tbNewUserLogin.Text = dt.Rows[0].ItemArray[4].ToString();
-                    }
-
-                    query = "select top 1 roleid from PersonRole where personid = " + ddlGetUser.SelectedValue.ToString();
-                    dt.Reset();
-                    dt = sql.ReturnDatatable(query);
-                    if (dt.Rows.Count > 0)
-                    {
-                        ddlNewUserRole.SelectedValue = dt.Rows[0].ItemArray[0].ToString();
-                    }
-                    else
-                        ddlNewUserRole.SelectedValue = "-1";
-                    //Get Comuters
-                    getUserComputer();
-                    //Get Last 5 Activity
-                    query = "select top 5 securitylogdate, securityinfo from securityLogs where personid = " + ddlGetUser.SelectedValue.ToString() + " order by securitylogdate desc";
-                    updateGridview(gvNewRecentActivity, query);
-                   
-                   
                 }
+
+                //Get DDL Roles
+                if (ddlUserRole.Items.Count <= 1)
+                {
+                    getRoles();
+                }
+
+            query = "select top 1 * from v_users where personid = " + ddlGetUser.SelectedValue.ToString();
+            userInfo = sql.ReturnDatatable(query);
+
+            if (userInfo.Rows.Count > 0)
+            {
+                ddlNewUserDepartment.SelectedValue = userInfo.Rows[0].ItemArray[7].ToString();
+                //get DDL Tickets
+                query = "select ticketID, " + hflNewUserID.Value.ToString() + " as PersonID,  description from ticket where personid = " + ddlGetUser.SelectedValue.ToString();
+                updateGridview(gvNewUserTickets, query);
+                query = "select * from v_users where personID = " + ddlGetUser.SelectedValue.ToString();
+                dt.Reset();
+                dt = sql.ReturnDatatable(query);
+                if (dt.Rows.Count > 0)
+                {
+                    tbNewUserFirstName.Text = dt.Rows[0].ItemArray[1].ToString();
+                    tbNewUserLastName.Text = dt.Rows[0].ItemArray[2].ToString();
+                    tbNewUserEmail.Text = dt.Rows[0].ItemArray[3].ToString();
+                    tbNewUserLogin.Text = dt.Rows[0].ItemArray[4].ToString();
+                }
+
+                query = "select top 1 roleid from PersonRole where personid = " + ddlGetUser.SelectedValue.ToString();
+                dt.Reset();
+                dt = sql.ReturnDatatable(query);
+                if (dt.Rows.Count > 0)
+                {
+                    ddlUserRole.SelectedValue = dt.Rows[0].ItemArray[0].ToString();
+                }
+                else
+                    ddlUserRole.SelectedValue = "-1";
+                //Get Comuters
+                getUserComputer();
+                //Get Last 5 Activity
+                query = "select top 5 securitylogdate, securityinfo from securityLogs where personid = " + ddlGetUser.SelectedValue.ToString() + " order by securitylogdate desc";
+                updateGridview(gvNewRecentActivity, query);
                 getDDLSelectedComputers();
-                hfRecordChange.Value = "false";
             }
+
+            hfRecordChange.Value = "false";
+
         }
 
         protected void GetNewUserTickets()
@@ -270,7 +306,6 @@ namespace Help_Desk
 
         protected void getNewUserDDL()
         {
-            sqlTypeCommands sql = new sqlTypeCommands();
             DataTable dt = new DataTable();
             
             string query = "select p.personid,	lastname + ', ' + firstname as PersonName from person p left outer join DepartmentUser du on p.personid = du.personid ";
@@ -305,8 +340,8 @@ namespace Help_Desk
 
         protected void getNewDepartment()
         {
+            hfRecordChange.Value = "true";
             String query = "select * from department";
-            sqlTypeCommands sql = new sqlTypeCommands();
             DataTable dt = new DataTable();
             dt = sql.ReturnDatatable(query);
             if (dt.Rows.Count > 0)
@@ -320,13 +355,16 @@ namespace Help_Desk
                 ddlNewDepartment.Items.Insert(0, new ListItem("All Departments", "-1"));
                 ddlNewDepartment.SelectedIndex = 0;
             }
+            hfRecordChange.Value = "false";
         }
 
 
         protected void ddlNewDepartment_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (hfRecordChange.Value == "false")
+                hfRecordChange.Value = "true";
                 getNewUserDDL();
+                hfRecordChange.Value = "false";
         }
 
         protected void ddlGetUser_SelectedIndexChanged(object sender, EventArgs e)
@@ -339,7 +377,6 @@ namespace Help_Desk
         {
             if ((hfNewRecord.Value == "false") && (tbNewUserFirstName.Text != ""))
             {
-                sqlTypeCommands sql = new sqlTypeCommands();
                 string query = "update person set FirstName = @firstname where personid = @personid";
                 List<SqlParameter> sp = new List<SqlParameter>
                 {
@@ -355,7 +392,6 @@ namespace Help_Desk
         {
             if ((hfNewRecord.Value == "false") && (tbNewUserLastName.Text != ""))
             {
-                sqlTypeCommands sql = new sqlTypeCommands();
                 string query = "update person set lastname = @lastname where personid=@personid";
                 List<SqlParameter> sp = new List<SqlParameter>
                     {
@@ -373,7 +409,6 @@ namespace Help_Desk
             if ((hfNewRecord.Value == "false") && (tbNewUserEmail.Text != ""))
             {
                 string query = "update person set emailaddress = @emailaddress where personid = @personid";
-                sqlTypeCommands sql = new sqlTypeCommands();
                 List<SqlParameter> sp = new List<SqlParameter>
                     {
                     new SqlParameter() { ParameterName = "@emailaddress", Value = tbNewUserEmail.Text.ToString()},
@@ -389,7 +424,6 @@ namespace Help_Desk
             if (hfNewRecord.Value == "false")
             {
                 string query = "sp_updateDepartmentUser";
-                sqlTypeCommands sql = new sqlTypeCommands();
                 List<SqlParameter> sp = new List<SqlParameter>
             {
                     new SqlParameter() { ParameterName = "@personid",  Value=ddlGetUser.SelectedValue.ToString()},
@@ -412,14 +446,13 @@ namespace Help_Desk
 
         protected void ddlNewUserRole_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if ((ddlNewUserRole.SelectedIndex.ToString() != "-1") && (hfNewRecord.Value == "false"))
+            if ((ddlUserRole.SelectedIndex.ToString() != "-1") && (hfNewRecord.Value == "false"))
             {
                 string query = "sp_updateRole";
-                sqlTypeCommands sql = new sqlTypeCommands();
                 List<SqlParameter> sp = new List<SqlParameter>
             {
                     new SqlParameter() { ParameterName = "@personid",  Value=ddlGetUser.SelectedValue.ToString()},
-                    new SqlParameter() { ParameterName = "@roleid", Value = ddlNewUserRole.SelectedValue.ToString()}
+                    new SqlParameter() { ParameterName = "@roleid", Value = ddlUserRole.SelectedValue.ToString()}
             };
 
                 string result = sql.CommandSQL(query, true, sp);
@@ -470,8 +503,7 @@ namespace Help_Desk
             if (ddlSelectComputer.SelectedValue != "-1")
             {
                 string query = "UpdateUserComputer";
-                sqlTypeCommands sql = new sqlTypeCommands();
-                List<SqlParameter> sp = new List<SqlParameter>
+                 List<SqlParameter> sp = new List<SqlParameter>
                 {
                     new SqlParameter() { ParameterName = "@ComputerID", Value = ddlSelectComputer.SelectedValue.ToString()},
                     new SqlParameter() { ParameterName = "@PersonID", Value = ddlGetUser.SelectedValue.ToString()}
@@ -491,6 +523,77 @@ namespace Help_Desk
             pnlUser.Visible = true;
             pnlUserInfo.Visible = false;
         }
+        protected void SaveNewUser()
+        {
+            string query;
+            List<SqlParameter> sp = new List<SqlParameter>();
 
+            
+
+            if  ((!string.IsNullOrEmpty(tbNewUserFirstName.Text) ||
+                (!string.IsNullOrEmpty(tbNewUserLastName.Text)) ||
+                (!string.IsNullOrEmpty(tbNewUserEmail.Text)) ||
+                (!string.IsNullOrEmpty(tbNewUserLogin.Text))) ||
+                (ddlNewUserDepartment.SelectedIndex != 0) ||
+                (ddlUserRole.SelectedIndex != 0))
+            {
+                query = "CreateNewUser";
+                sp.Add(new SqlParameter() { ParameterName = "@firstname", Value = tbNewUserFirstName.Text });
+                sp.Add(new SqlParameter() { ParameterName = "@lastname", Value = tbNewUserLastName.Text });
+                sp.Add(new SqlParameter() { ParameterName = "@emailaddress", Value = tbNewUserEmail.Text });
+                sp.Add(new SqlParameter() { ParameterName = "@loginName", Value = tbNewUserLogin.Text });
+                sp.Add(new SqlParameter() { ParameterName = "@departmentID", Value = ddlNewUserDepartment.SelectedValue });
+                sp.Add(new SqlParameter() { ParameterName = "@roleid", Value = ddlUserRole.SelectedValue });
+                string result = sql.CommandSQL(query, true, sp);
+                if (result != "")
+                {
+                    MessageBox.show(this.Page, result.ToString());
+                }
+            }
+            ClearNewUserTextBox();
+            HideAllPanels();
+
+        }
+        protected void btnNewUser_Click(object sender, EventArgs e)
+        {
+
+            pnlUserInfo.Visible = true;
+            hfNewRecord.Value = "true";
+            hflNewUserID.Value = "-1";
+            btnNewUser.Visible = true;
+            btnCancelNewUser.Visible = true;
+            ClearNewUserTextBox();
+            getNewUserDepartment();
+            getRoles();
+            ddlUserRole.SelectedValue = "3";
+            btnSaveNewUser.Visible = true;
+            tbNewUserLogin.ReadOnly = false;
+        }
+
+        protected void ClearNewUserTextBox()
+        {
+            tbNewUserFirstName.Text = "";
+            tbNewUserLastName.Text = "";
+            tbNewUserLogin.Text = "";
+            tbNewUserEmail.Text = "";
+        }
+
+        protected void btnSaveNewUser_Click(object sender, EventArgs e)
+        {
+            SaveNewUser();
+        }
+
+        protected void btnCancelNewUser_Click(object sender, EventArgs e)
+        {
+            btnNewUser.Visible = false;
+            btnCancelNewUser.Visible = false;
+            ClearNewUserTextBox();
+            HideAllPanels();
+        }
+
+        protected void ddlUserRole_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

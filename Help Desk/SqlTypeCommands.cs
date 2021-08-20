@@ -49,6 +49,28 @@ namespace Help_Desk
             return dt;
         }
 
+        public DataTable ReturnDTFromSproc(string query)
+        {
+            dt.Reset();
+
+            SqlConnection con = new SqlConnection(web);
+            SqlCommand cmd = new SqlCommand(query, con);
+            try
+            {
+                
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                con.Open();
+                da.SelectCommand = cmd;
+                da.Fill(dt);
+                con.Close();
+            }
+            catch (SystemException ex)
+            {
+
+            }
+            return dt;
+        }
         public string returnValueFromSproc(string query, bool sproc, List<SqlParameter> sp, string returnValue)
         {
             string value = "";

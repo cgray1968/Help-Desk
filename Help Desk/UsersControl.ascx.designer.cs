@@ -87,6 +87,15 @@ namespace Help_Desk
         protected global::System.Web.UI.WebControls.HiddenField hfNewRecord;
 
         /// <summary>
+        /// btnNewUser control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnNewUser;
+
+        /// <summary>
         /// lblFilter control.
         /// </summary>
         /// <remarks>
@@ -130,6 +139,15 @@ namespace Help_Desk
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlUserInfo;
+
+        /// <summary>
+        /// SqlDataSource1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.SqlDataSource SqlDataSource1;
 
         /// <summary>
         /// lblInfo control.
@@ -222,13 +240,13 @@ namespace Help_Desk
         protected global::System.Web.UI.WebControls.Label lblNewUserRole;
 
         /// <summary>
-        /// ddlNewUserRole control.
+        /// ddlUserRole control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlNewUserRole;
+        protected global::System.Web.UI.WebControls.DropDownList ddlUserRole;
 
         /// <summary>
         /// lblNewUserLogin control.
@@ -247,6 +265,24 @@ namespace Help_Desk
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbNewUserLogin;
+
+        /// <summary>
+        /// btnSaveNewUser control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSaveNewUser;
+
+        /// <summary>
+        /// btnCancelNewUser control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCancelNewUser;
 
         /// <summary>
         /// lblNewUserTickets control.
